@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detector</title>
+    <style>
+        :root { font-family: Arial, sans-serif; color: #222; background: #f7f9fb; }
+        body { max-width: 760px; margin: 0 auto; padding: 48px 20px; }
+        main { background: white; border: 1px solid #e0e5ea; border-radius: 8px; padding: 28px; }
+        h1 { margin-top: 0; color: #17324d; }
+        textarea { box-sizing: border-box; width: 100%; min-height: 130px; padding: 12px; border: 1px solid #bbc6d0; border-radius: 4px; font: inherit; resize: vertical; }
+        button { margin-top: 14px; padding: 10px 16px; border: 0; border-radius: 4px; color: white; background: #1769aa; cursor: pointer; font: inherit; }
+        #result { margin-top: 24px; white-space: pre-wrap; }
+        .error { color: #b42318; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Emotion Detector</h1>
+        <textarea id="textToAnalyze" placeholder="Enter text to analyze..."></textarea>
+        <button type="button" onclick="analyzeEmotion()">Analyze emotion</button>
+        <div id="result" role="status"></div>
+    </main>
+    <script>
+        async function analyzeEmotion() {
+            const text = document.getElementById('textToAnalyze').value;
+            const result = document.getElementById('result');
+            if (!text.trim()) {
+                result.className = 'error';
+                result.textContent = 'Invalid text! Please try again!';
+                return;
+            }
+            result.className = '';
+            result.textContent = 'Analyzing...';
+            const response = await fetch(`/emotionDetector?text=${encodeURIComponent(text)}`);
+            const data = await response.json();
+            result.className = response.ok ? '' : 'error';
+            result.textContent = response.ok
+                ? `Dominant emotion: ${data.dominant_emotion}\n\n${JSON.stringify(data, null, 2)}`
+                : data.error;
+        }
+    </script>
+</body>
+</html>
